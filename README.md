@@ -71,7 +71,7 @@ CI runs AFC `main`, `DEV` and the ACE_series branch against Klipper and Kalico.
 
 ## Credits
 
-Written by Claude (Anthropic's AI) together with
+Written by Jean-Claude Van Code (Claude, Anthropic's AI) together with
 [@mikeinredding](https://github.com/mikeinredding).
 
 Protocol knowledge from printers-for-people/ACEResearch, utkabobr/DuckACE,

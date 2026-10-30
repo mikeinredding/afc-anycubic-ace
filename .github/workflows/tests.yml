@@ -1,0 +1,38 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.afc.name }} / ${{ matrix.firmware.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        firmware:
+          - { name: klipper, repo: https://github.com/Klipper3d/klipper.git }
+          - { name: kalico, repo: https://github.com/KalicoCrew/kalico.git }
+        afc:
+          # What Simple AF's FAQ installs
+          - { name: afc-main, repo: https://github.com/AFCProject/AFC-Klipper-Add-On.git, branch: main }
+          - { name: afc-dev, repo: https://github.com/AFCProject/AFC-Klipper-Add-On.git, branch: DEV }
+          # Where AFC's own ACE support is being developed; it changes the
+          # toolhead sensor plumbing this unit relies on
+          - { name: afc-ace-series, repo: https://github.com/jimmyjon711/AFC-Klipper-Add-On.git, branch: ACE_series }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pytest greenlet cffi Jinja2
+      - name: Clone ${{ matrix.firmware.name }}
+        run: git clone --depth 1 ${{ matrix.firmware.repo }} "$RUNNER_TEMP/firmware"
+      - name: Run tests
+        env:
+          KLIPPER_PATH: ${{ runner.temp }}/firmware
+          AFC_REPO: ${{ matrix.afc.repo }}
+          AFC_BRANCH: ${{ matrix.afc.branch }}
+        run: ./run-tests.sh -v
